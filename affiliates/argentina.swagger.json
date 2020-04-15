@@ -259,7 +259,7 @@
         }
       },
       "Customer" : {
-        "required" : [ "address", "agreements", "birth_date", "credit_score", "email", "first_name", "gender", "has_loan", "last_name", "neto_income", "occupation", "personal_id", "phone", "second_last_name", "signature" ],
+        "required" : [ "address", "agreements", "birth_date", "credit_score", "email", "first_name", "gender", "has_loan", "last_name", "neto_income", "occupation", "personal_id", "phone", "second_last_name" ],
         "type" : "object",
         "properties" : {
           "first_name" : {
@@ -327,7 +327,7 @@
         }
       },
       "Lead" : {
-        "required" : [ "ip_address", "loan_period", "loan_purpose", "loan_sum", "signature" ],
+        "required" : [ "ip_address", "loan_period", "loan_purpose", "loan_sum" ],
         "type" : "object",
         "properties" : {
           "loan_sum" : {
