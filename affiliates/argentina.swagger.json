@@ -3,7 +3,7 @@
   "info" : {
     "title" : "Argentina Affiliate Documentation",
     "description" : "# Introduction \n\nCredy is a company that specializes on the quality lead generation. \\\nThis document further describes fdfhow to integrate API to send leads to Credy.\\\nIf you have any questions, please do not hesitate to contact the IT manager at [it@credy.eu](mailto:it@credy.eu).\n\n## General information\n\nProduction URL: [https://api.credy.eu/v3/](https://api.credy.eu/v3/)\n\nStaging URL: [http://api.staging.credy.eu/v3/](http://api.staging.credy.eu/v3/)\n\nAPI supports post fields, XML and JSON.\n\nTo get response error messages in Spanish, \"Accept-Language\" header’s value must be set to according ISO code. Ex: `es` or `es-AR`.\n## Authorization\nAuthorization is performed with OAuth 2.0 Client Credentials Grant.\nWhen requesting token, the client key and secret key must be sent in request body.\nClient key and secret key will be assigned to you by Credy.\nThe requests to api must be authenticated with [bearer token](https://tools.ietf.org/html/rfc6749#section-7.1).\n## Lead registration flow\n\n1. Request is sent to /v3/customers\n\n2. If request is successful, customer uuid must be stored\n\n3. Request is sent to /v3/leads with previously stored customer uuid in query parameter \"customer\" *ex. /v3/leads?customer=a3ff7c20-e9e8-43a0-bfb7-71a5cf43b8d3* \n4. When the lead is accepted by api (under_investigation is received from POST lead), please redirect the customer to https://www.credy.es/form-loading/?uuid={UUID} (where {UUID} is replaced by the uuid that you receive from POST lead)\n",
-    "version" : "3.0.10"
+    "version" : "3.0.11"
   },
   "servers" : [ {
     "url" : "http://api.staging.credy.eu/v3/",
@@ -232,7 +232,7 @@
   "components" : {
     "schemas" : {
       "PrimaryAddress" : {
-        "required" : [ "city", "house_number", "postal_code", "street" ],
+        "required" : [ "city", "postal_code" ],
         "type" : "object",
         "properties" : {
           "postal_code" : {
@@ -243,45 +243,6 @@
           "city" : {
             "type" : "string",
             "example" : "La Camella"
-          },
-          "street" : {
-            "type" : "string",
-            "example" : "Ruela Armenta"
-          },
-          "house_number" : {
-            "type" : "string",
-            "example" : "1"
-          },
-          "flat_number" : {
-            "type" : "string",
-            "example" : "4"
-          }
-        }
-      },
-      "EmployerAddress" : {
-        "required" : [ "city" ],
-        "type" : "object",
-        "properties" : {
-          "postal_code" : {
-            "type" : "string",
-            "description" : "Format: /^[A-Z]{1}[0-9]{4}$/",
-            "example" : "A1234"
-          },
-          "city" : {
-            "type" : "string",
-            "example" : "La Camella"
-          },
-          "street" : {
-            "type" : "string",
-            "example" : "Ruela Armenta"
-          },
-          "house_number" : {
-            "type" : "string",
-            "example" : "1"
-          },
-          "flat_number" : {
-            "type" : "string",
-            "example" : "4"
           }
         }
       },
@@ -298,7 +259,7 @@
         }
       },
       "Customer" : {
-        "required" : [ "address", "agreements", "bank_account", "birth_date", "credit_score", "dependant_count", "education", "email", "first_name", "gender", "has_loan", "housing_type", "last_name", "lives_at_registered_address", "marital_status", "monthly_expenses", "nationality", "neto_income", "occupation", "personal_id", "phone", "phone_plan", "second_last_name" ],
+        "required" : [ "address", "agreements", "birth_date", "credit_score", "email", "first_name", "gender", "has_loan", "last_name", "neto_income", "occupation", "personal_id", "phone", "second_last_name", "signature" ],
         "type" : "object",
         "properties" : {
           "first_name" : {
@@ -311,12 +272,7 @@
           },
           "second_last_name" : {
             "type" : "string",
-            "example" : "Pérez"
-          },
-          "nationality" : {
-            "type" : "string",
-            "description" : "max length: 2",
-            "example" : "AR"
+            "example" : "Posada"
           },
           "gender" : {
             "type" : "string",
@@ -336,46 +292,12 @@
             "type" : "string",
             "example" : "12345678"
           },
-          "marital_status" : {
-            "type" : "string",
-            "example" : "MARRIED",
-            "enum" : [ "SINGLE", "MARRIED", "DIVORCED", "WITH_PARTNER", "WIDOW" ]
-          },
-          "bank_account" : {
-            "type" : "string",
-            "description" : "Format: /[0-9]{22}/",
-            "example" : "3308921685962090928453"
-          },
-          "education" : {
-            "type" : "string",
-            "example" : "HIGH_SCHOOL",
-            "enum" : [ "NO_EDUCATION", "BASIC_SCHOOL", "HIGH_SCHOOL", "BACHELOR", "MASTER", "PHD", "INDUSTRIAL_SCHOOL" ]
-          },
           "phone" : {
-            "type" : "string",
-            "example" : "8101234567"
-          },
-          "phone_plan" : {
-            "type" : "string",
-            "enum" : [ "PREPAID", "CONTRACT" ]
-          },
-          "phone2" : {
             "type" : "string",
             "example" : "8101234567"
           },
           "address" : {
             "$ref" : "#/components/schemas/PrimaryAddress"
-          },
-          "lives_at_registered_address" : {
-            "type" : "boolean"
-          },
-          "secondary_address" : {
-            "$ref" : "#/components/schemas/PrimaryAddress"
-          },
-          "housing_type" : {
-            "type" : "string",
-            "example" : "RENTED_ROOM",
-            "enum" : [ "RENTED_ROOM", "RENTED_APARTMENT_OR_HOUSE", "OWN_HOUSE_OR_APARTMENT", "WITH_PARENTS" ]
           },
           "occupation" : {
             "type" : "string",
@@ -387,46 +309,10 @@
             "format" : "int32",
             "example" : 1500
           },
-          "monthly_expenses" : {
-            "type" : "integer",
-            "format" : "int32",
-            "example" : 900
-          },
-          "employer_address" : {
-            "$ref" : "#/components/schemas/EmployerAddress"
-          },
-          "remuneration_deadline" : {
-            "type" : "string",
-            "description" : "required when `occupation` is not in  :\n- UNEMPLOYED\n",
-            "example" : "yyyy-mm-dd"
-          },
-          "employed_since" : {
-            "type" : "string",
-            "description" : "required when `occupation` is in:\n- EMPLOYED_INDEFINITE_PERIOD",
-            "example" : "yyyy-mm-dd"
-          },
-          "employer" : {
-            "type" : "string",
-            "description" : "required when `occupation` is in:\n- EMPLOYED_INDEFINITE_PERIOD"
-          },
-          "current_job_position" : {
-            "type" : "string",
-            "description" : "required when `occupation` is in:\n- EMPLOYED_INDEFINITE_PERIOD"
-          },
-          "employer_phone" : {
-            "type" : "string",
-            "description" : "required when `occupation` is in:\n- EMPLOYED_INDEFINITE_PERIOD",
-            "example" : "8101234567"
-          },
           "credit_score" : {
             "type" : "string",
             "example" : "GOOD_650_TO_749",
-            "enum" : [ "EXCELLENT_MORE_THAN_750", "GOOD_650_TO_749", "STABLE_520_TO_649", "LOW_300_TO_619", "DONT_KNOW", "NO_CREDIT_HISTORY" ]
-          },
-          "business_registration_date" : {
-            "type" : "string",
-            "description" : "required when `occupation` is in:\n- ECONOMIC_ACTIVITY\n",
-            "example" : "yyyy-mm-dd"
+            "enum" : [ "EXCELLENT_MORE_THAN_750", "GOOD_650_TO_749", "STABLE_520_TO_649", "LOW_300_TO_519", "DONT_KNOW", "NO_CREDIT_HISTORY" ]
           },
           "has_loan" : {
             "type" : "boolean",
@@ -441,7 +327,7 @@
         }
       },
       "Lead" : {
-        "required" : [ "ip_address", "loan_period", "loan_sum" ],
+        "required" : [ "ip_address", "loan_period", "loan_purpose", "loan_sum", "signature" ],
         "type" : "object",
         "properties" : {
           "loan_sum" : {
@@ -460,6 +346,10 @@
             "type" : "string",
             "description" : "IP address of customer",
             "example" : "192.168.0.255"
+          },
+          "loan_purpose" : {
+            "type" : "string",
+            "example" : "Wedding"
           },
           "pingtree" : {
             "type" : "array",
